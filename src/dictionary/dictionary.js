@@ -1,6 +1,6 @@
 import { isObject, isArray } from "../utils/judgment";
 
-class Dictionary {
+export class Dictionary {
   #valueMap;
   #linkMap = new Map();
 
@@ -8,41 +8,48 @@ class Dictionary {
     this.setValueMap(obj);
   }
 
-  valueOf (key) {
+  getVal (key) {
     return this.#valueMap.get(key);
   }
   values () {
-    return Array.from(this.#valueMap.values());
+    return this.#valueMap.values();
   }
   keys () {
-    return Array.from(this.#valueMap.keys());
+    return this.#valueMap.keys();
   }
-  keyOf (value) {
+  getKey (value) {
     for (let [key, val] of this.#valueMap.entries()) {
       if (val === value) return key;
     }
   }
-  hasValue (value) {
-    return [...this.#valueMap.values()].includes(value);
+  hasValue(value) {
+    for (let val of this.values()) {
+      if (val === value) return true;
+    }
+    return false;
   }
   setValueMap (obj) {
     this.#valueMap = Dictionary.toMap(obj);
+  }
+  [Symbol.iterator]() {
+    return this.#valueMap[Symbol.iterator]();
   }
 
   /**
    * add linkMap, the key of linkMap must be the value of #valueMap
    * when dictionary is an array, it will convert array to a dictionary by the order of #valueMap
    * when dictionary is an object, it will convert object to a dictionary directly
-   * @param {any} mapName 
-   * @param {Array, Object} dictionary 
+   * @param {any} linkName
+   * @param {Array, Object} dictionary
    */
-  addLinkMap (mapName, dictionary) {
+  addLinkMap (linkName, dictionary) {
     if (isArray(dictionary)) {
-      this.#linkMap.set(mapName, new Dictionary(this.convertLinkMap(dictionary)))
+      this.#linkMap.set(linkName, new Dictionary(this.convertLinkMap(dictionary)))
     } else if (isObject(dictionary)) {
-      this.#linkMap.set(mapName, new Dictionary(dictionary))
+      this.#linkMap.set(linkName, new Dictionary(dictionary))
+    } else {
+      throw new Error('linkMap must be an array or an object')
     }
-    console.error('linkMap must be an array or an object')
   }
   convertLinkMap (dictArr) {
     const result = {}
@@ -51,12 +58,12 @@ class Dictionary {
     })
     return result
   }
-  valueOfLink (linkKey, key) {
-    const linkDict = this.#linkMap.get(linkKey)
-    return linkDict.valueOf(key)
+  linkDict (linkName) {
+    if (!this.#linkMap.has(linkName)) {
+      throw new Error('linkMap has no key:', linkName)
+    }
+    return this.#linkMap.get(linkName)
   }
-
-  
 
   static toMap (obj) {
     if (obj instanceof Map) return obj;
