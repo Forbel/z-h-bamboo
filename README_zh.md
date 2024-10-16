@@ -16,7 +16,7 @@
 您可以通过以下命令在您的 npm 项目中安装此库：
 
 ```bash
-npm install z-h-bamboo
+npm install @forbel/simple-wheels
 ```
 
 
@@ -25,7 +25,7 @@ npm install z-h-bamboo
 ### 导入：
 
 ```js 
-import { Dictionary, DictContainer, dictContainer } from 'z-h-bamboo';
+import { Dictionary, DictContainer, dictContainer } from '@forbel/simple-wheels';
 ```
 
 ### 示例：
@@ -110,7 +110,7 @@ const statusDict = dictContainer.getDict('status');
 
 ## 导入
 ```js
-import { PageStatus } from 'z-h-bamboo';
+import { PageStatus } from '@forbel/simple-wheels';
 ```
 
 ## 使用

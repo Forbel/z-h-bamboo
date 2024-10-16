@@ -15,7 +15,7 @@ This library provides an easy-to-use tool for managing dictionaries and key-valu
 You can install this library in your npm project using the following command:
 
 ```bash
-npm install z-h-bamboo
+npm install @forbel/simple-wheels
 ```
 
 ## Usage
@@ -23,7 +23,7 @@ npm install z-h-bamboo
 ### Import:
 
 ```js
-import { Dictionary, DictContainer, dictContainer } from 'z-h-bamboo';
+import { Dictionary, DictContainer, dictContainer } from '@forbel/simple-wheels';
 ```
 
 ## Examples:
@@ -107,7 +107,7 @@ Used to determine whether the current page is in "Add", "Edit", or "View" status
 ### Import
 
 ```js
-import { PageStatus } from 'z-h-bamboo';
+import { PageStatus } from '@forbel/simple-wheels';
 ```
 
 ### Usage
