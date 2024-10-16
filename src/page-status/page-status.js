@@ -1,14 +1,16 @@
-const ADD = 'ADD', EDIT = 'EDIT', VIEW = 'VIEW';
+const ADD = 'ADD', EDIT = 'EDIT', CHECK = 'CHECK';
+const StatusMap = [
+    [ADD, ADD],
+    [EDIT, EDIT],
+    [CHECK, CHECK]
+]
 
 export class PageStatus {
   status;
-  statusMap = new Map([
-    [ADD, ADD],
-    [EDIT, EDIT],
-    [VIEW, VIEW]
-  ]);
+  statusMap;
   constructor(status = null) {
     this.status = status;
+    this.statusMap = new Map(StatusMap)
   }
 
   changeStatus(key) {
@@ -34,8 +36,8 @@ export class PageStatus {
   get isEdit() {
     return this.isStatus(EDIT);
   }
-  get isView() {
-    return this.isStatus(VIEW);
+  get isCheck() {
+    return this.isStatus(CHECK);
   }
   get statusEnum() {
     return this.statusMap;

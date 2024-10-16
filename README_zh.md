@@ -48,26 +48,24 @@ console.log(statusDict.hasValue(110010)); // Output: true
 // 通过值获取键名
 console.log(statusDict.getKey(110010)); // Output: 'pending'
 
-// 获取所有的值（返回一个 Iterator）
-console.log(statusDict.values()); // Output: [Iterator]
-console.log([...statusDict.values()]); // Output: [110010, 110020, 110030]
+// 获取所有的值
+console.log(statusDict.values()); // Output: [110010, 110020, 110030]
 
-// 获取所有的键（返回一个 Iterator）
-console.log(statusDict.keys()); // Output: [Iterator]
-console.log([...statusDict.keys()]); // Output: ['pending', 'shipped', 'delivered']
+// 获取所有的键
+console.log(statusDict.keys()); // Output: ['pending', 'shipped', 'delivered']
 
-// 获取原始字典对象
-console.log(statusDict.value); // Output: { pending: 110010, shipped: 110020, delivered: 110030 }
+// 获取原始字典对象 (返回创建时传入的构造函数参数)
+console.log(statusDict.getRaw()); // Output: { pending: 110010, shipped: 110020, delivered: 110030 }
 
 // 添加关联字典
-statusDict.addLinkMap('tips', {
+statusDict.addLink('tips', {
   [statusDict.getVal('pending')]: '订单正在等待处理',
   [statusDict.getVal('shipped')]: '订单已发货',
   [statusDict.getVal('delivered')]: '订单已送达'
 });
 
 // 获取关联字典
-statusDict.linkOf('tips'); // Output: Map(3) { 110010 => '订单正在等待处理', 110020 => '订单已发货', 110030 => '订单已送达' }
+statusDict.getLink('tips'); // Output: Map(3) { 110010 => '订单正在等待处理', 110020 => '订单已发货', 110030 => '订单已送达' }
 
 // 获取关联字典的值
 statusDict.getLinkVal('tips', statusDict.getVal('pending')); // Output: '订单正在等待处理'
@@ -78,17 +76,71 @@ statusDict.getLinkVal('tips', statusDict.getVal('pending')); // Output: '订单�
 
 ### DictContainer 类
 
+字典容器类，用于管理多个字典。
+
 ```js
+// 创建一个字典容器
+const dictContainer = new DictContainer();
+
 // 向容器添加一个新字典
-dictContainer.addDict('status', { pending: 'PENDING', shipped: 'SHIPPED', delivered: 'DELIVERED' });
+dictContainer.addDict('status', { pending: 110010, shipped: 110020, delivered: 110030 });
 
 // 从容器获取字典
+const statusDict = dictContainer.getDict('status'); // Output: Map(3) {pending => 110010, shipped => 110020, delivered => 110030}
+
+```
+
+### dictContainer
+
+一个默认生成的字典容器，当不需要维护复杂字典时，可以直接使用。
+
+```js
+// 向默认容器中添加字典
+dictContainer.addDict('status', { pending: 110010, shipped: 110020, delivered: 110030 });
+
+// 从默认容器中获取字典
 const statusDict = dictContainer.getDict('status');
 
-// 访问链接的字典
-const descriptionDict = statusDict.linkDict('description');
+```
 
-// 从链接的字典中检索值
-console.log(descriptionDict.getVal('pending')); // Output: 'Order is pending'
+
+## 页面状态
+
+用于判断当前页面属于新增、编辑、查看等状态。
+
+## 导入
+```js
+import { PageStatus } from 'z-h-bamboo';
+```
+
+## 使用
+
+```js
+/**
+ * 创建页面状态对象
+ * @param {string} status - 当前页面状态（可选）'ADD', 'EDIT', 'VIEW'
+ */
+const pageStatus = new PageStatus(status);
+
+// 改变当前页面状态
+pageStatus.changeStatus('EDIT');
+
+// 判断当前页面状态
+pageStatus.isStatus('EDIT');
+
+// 判断当前页面状态是否属于某几个状态
+pageStatus.fetchStatus(['ADD', 'EDIT']);
+
+// 获取当前页面状态
+pageStatus.status;
+
+// 判断当前页面状态是否为新增
+pageStatus.isAdd;
+
+// 判断当前页面状态是否为编辑
+pageStatus.isEdit;
+
+// 判断当前页面状态是否为查看
+pageStatus.isView;
 
 ```
