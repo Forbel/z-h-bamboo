@@ -1,4 +1,4 @@
-import { isObject, isArray, isMap } from "../utils/judgment";
+import { isObject, isArray, isMap, deepClone } from "../utils";
 
 /**
  * the origin data only accept below types:
@@ -7,12 +7,12 @@ import { isObject, isArray, isMap } from "../utils/judgment";
  * 3. Map: available for all cases
  */
 export class Dictionary {
-  raw;
+  #raw;
   #valueMap;
   #linkMap = new Map();
 
   constructor (data) {
-    this.raw = data;
+    this.#raw = data;
     this.#setValueMap(data);
   }
 
@@ -36,6 +36,10 @@ export class Dictionary {
     }
     return false;
   }
+  getRaw () {
+    return deepClone(this.#raw);
+  }
+
   #setValueMap (data) {
     if (isMap(data)) {
       this.#valueMap = data;
@@ -46,9 +50,6 @@ export class Dictionary {
     } else {
       throw new Error('type of data is invalid');
     }
-  }
-  [Symbol.iterator]() {
-    return this.#valueMap[Symbol.iterator]();
   }
 
   /**
@@ -78,5 +79,8 @@ export class Dictionary {
     if (isMap(data)) return data;
 
     return new Map(Object.entries(data));
+  }
+  [Symbol.iterator]() {
+    return this.#valueMap[Symbol.iterator]();
   }
 }
