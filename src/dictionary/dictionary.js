@@ -1,21 +1,29 @@
-import { isObject, isArray } from "../utils/judgment";
+import { isObject, isArray, isMap } from "../utils/judgment";
 
+/**
+ * the origin data only accept below types:
+ * 1. Object: available for string key
+ * 2. Array: available for all cases
+ * 3. Map: available for all cases
+ */
 export class Dictionary {
+  raw;
   #valueMap;
   #linkMap = new Map();
 
-  constructor (obj) {
-    this.setValueMap(obj);
+  constructor (data) {
+    this.raw = data;
+    this.#setValueMap(data);
   }
 
   getVal (key) {
     return this.#valueMap.get(key);
   }
   values () {
-    return this.#valueMap.values();
+    return Array.from(this.#valueMap.values());
   }
   keys () {
-    return this.#valueMap.keys();
+    return Array.from(this.#valueMap.keys());
   }
   getKey (value) {
     for (let [key, val] of this.#valueMap.entries()) {
@@ -28,50 +36,47 @@ export class Dictionary {
     }
     return false;
   }
-  setValueMap (obj) {
-    this.#valueMap = Dictionary.toMap(obj);
+  #setValueMap (data) {
+    if (isMap(data)) {
+      this.#valueMap = data;
+    } else if (isArray(data)) {
+      this.#valueMap = new Map(data);
+    } else if (isObject(data)) {
+      this.#valueMap = Dictionary.toMap(data);
+    } else {
+      throw new Error('type of data is invalid');
+    }
   }
   [Symbol.iterator]() {
     return this.#valueMap[Symbol.iterator]();
   }
 
   /**
-   * add linkMap, the key of linkMap must be the value of #valueMap
-   * when dictionary is an array, it will convert array to a dictionary by the order of #valueMap
-   * when dictionary is an object, it will convert object to a dictionary directly
+   * add linkMap, the key of linkMap must be value of #valueMap
    * @param {any} linkName
-   * @param {Array, Object} dictionary
+   * @param {Array} dictionary
    */
-  addLinkMap (linkName, dictionary) {
-    if (isArray(dictionary)) {
-      this.#linkMap.set(linkName, new Dictionary(this.convertLinkMap(dictionary)))
-    } else if (isObject(dictionary)) {
-      this.#linkMap.set(linkName, new Dictionary(dictionary))
-    } else {
-      throw new Error('linkMap must be an array or an object')
-    }
+  addLink (linkName, dictionary, convertType = false) {
+    const data = convertType ? this[convertType]?.(dictionary) : dictionary
+    this.#linkMap.set(linkName, new Dictionary(data))
   }
-  convertLinkMap (dictArr) {
-    const result = {}
-    this.values().forEach((key, index) => {
-      result[key] = dictArr[index]
-    })
-    return result
-  }
-  linkDict (linkName) {
+  getLink (linkName) {
     if (!this.#linkMap.has(linkName)) {
       throw new Error('linkMap has no key:', linkName)
     }
     return this.#linkMap.get(linkName)
   }
-
-  static toMap (obj) {
-    if (obj instanceof Map) return obj;
-
-    return new Map(Object.entries(obj));
+  getLinkVal (linkName, value) {
+    const linkDict = this.linkOf(linkName)
+    return linkDict.getVal(value);
+  }
+  byDefaultSequence (dictArr) {
+    return this.values().map((item, index) => [item, dictArr[index]])
   }
 
-  get value () {
-    return Object.fromEntries(this.#valueMap);
+  static toMap (data) {
+    if (isMap(data)) return data;
+
+    return new Map(Object.entries(data));
   }
 }
