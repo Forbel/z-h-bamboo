@@ -1,7 +1,16 @@
 {
   "presets": [
-    ["@babel/preset-env", {
-      "targets": "> 0.25%, not dead" // 针对大多数现代浏览器
-    }]
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "ie": "11"
+        }
+      }
+    ]
+  ],
+  "plugins": [
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-private-methods"
   ]
 }
